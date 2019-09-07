@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-const fs = require('fs').promises
-const path = require('path')
-const md = require('markdown-it')()
-const R = require('ramda')
+const fs = require('fs').promises;
+const path = require('path');
+const md = require('markdown-it')();
+const R = require('ramda');
 
 function gen_html(body) {
   return `
@@ -11,7 +11,7 @@ function gen_html(body) {
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>资治通鉴</title>
+    <title>史记</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.min.css" />
     <style>
       * {font-size: 20px;}
@@ -37,24 +37,26 @@ function gen_html(body) {
   </div>
   </body>
 </html>
-`
+`;
 }
 
 async function read(filename) {
-  const content = JSON.parse(await fs.readFile(filename, 'utf8'))
-  const name = path.basename(filename, '.json')
-  const [topic, chapter] = content[0].text.replace('# ', '').split(' ').slice(0, 2)
-  return [topic, `* [${chapter}](${name}.html)`]
+  const content = JSON.parse(await fs.readFile(filename, 'utf8'));
+  const name = path.basename(filename, '.json');
+  const [topic, chapter] = content[0].text
+    .replace('# ', '')
+    .split(' ')
+    .slice(0, 2);
+  return [topic, `* [${chapter}](${name}.html)`];
 }
-
 
 async function processFile(templateFile, outFile, content) {
   try {
-    let data = await fs.readFile(templateFile, 'utf8')
-    let result = md.render(`${data.split('---')[0]}---\n\n${content}`)
-    await fs.writeFile(outFile, gen_html(result))
+    let data = await fs.readFile(templateFile, 'utf8');
+    let result = md.render(`${data.split('---')[0]}---\n\n${content}`);
+    await fs.writeFile(outFile, gen_html(result));
   } catch (e) {
-    console.log(e)
+    console.log(e);
   }
 }
 
@@ -73,23 +75,21 @@ async function main() {
       describe: 'output path to put generated md files'
     })
     .demandOption(['input', 'template', 'output'], 'Please provide input path, template file and output file')
-    .help()
-    .argv
+    .help().argv;
 
-  const results = Array(294)
+  const results = Array(130)
     .fill()
     .map((x, i) => {
-      const filename = path.join(argv.i, `${(i + 1).toString().padStart(3, '0')}.json`)
-      return read(filename)
-    })
+      const filename = path.join(argv.i, `${(i + 1).toString().padStart(3, '0')}.json`);
+      return read(filename);
+    });
 
-
-  const content = await Promise.all(results)
+  const content = await Promise.all(results);
   const grouped = R.groupWith((a, b) => a[0] === b[0], content)
     .map(item => `# ${item[0][0]}\n\n${item.map(v => v[1]).join('\n')}`)
-    .join('\n\n---\n\n')
+    .join('\n\n---\n\n');
 
-  await processFile(argv.t, argv.o, grouped)
+  await processFile(argv.t, argv.o, grouped);
 }
 
-main()
+main();

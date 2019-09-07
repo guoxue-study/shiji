@@ -1,6 +1,6 @@
 {
   "name": "tongjian",
-  "version": "0.7.0",
+  "version": "0.17.2",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@marp-team/marp-cli": "^0.13.0",
     "@marp-team/marp-core": "^0.12.1",
     "markdown-it-abbr": "^1.0.4",
     "markdown-it-container": "^2.0.0",
@@ -17,7 +18,8 @@
     "markdown-it-html5-media": "^0.6.0",
     "markdown-it-mark": "^2.0.0",
     "markdown-it-sub": "^1.0.0",
-    "markdown-it-sup": "^1.0.0"
+    "markdown-it-sup": "^1.0.0",
+    "ramda": "^0.26.1"
   },
   "dependencies": {
     "xf-tts": "^1.0.0",

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-const fs = require('fs').promises
-const path = require('path')
+const fs = require('fs').promises;
+const path = require('path');
 
 function gen_header(title) {
   return `---
@@ -10,48 +10,50 @@ theme: uncover
 paginate: true
 ---
 
-`
+`;
 }
 
 async function read(filename) {
-  const content = JSON.parse(await fs.readFile(filename, 'utf8'))
-  const name = path.basename(filename, '.json')
-  const audio_path = path.join('assets/audios', name)
-  await fs.mkdir(path.join('slides', audio_path), { recursive: true })
+  const content = JSON.parse(await fs.readFile(filename, 'utf8'));
+  const name = path.basename(filename, '.json');
+  const audio_path = path.join('assets/audios', name);
+  await fs.mkdir(path.join('slides', audio_path), { recursive: true });
 
-  return gen_header(content[0].text) + content
-    .filter(item => item.text !== '')
-    .map(item => normalize(item, audio_path))
-    .join('\n\n---\n\n')
+  return (
+    gen_header(content[0].text) +
+    content
+      .filter(item => item.text !== '')
+      .map(item => normalize(item, audio_path))
+      .join('\n\n---\n\n')
+  );
 }
 
-
 function normalize(content, audio_path) {
-  let audio = ''
-  let bg = ''
+  let audio = '';
+  let bg = '';
 
   if (content.audio) {
-    const filename = path.join(audio_path, content.audio)
-    audio = `![](${filename})\n\n`
+    const filename = path.join(audio_path, content.audio);
+    audio = `![](${filename})\n\n`;
   }
 
-  const text = content.text.replace(/“/g, '__「').replace(/”/g, '」__ ')
+  const text = content.text.replace(/“/g, ' __「').replace(/”/g, '」__ ');
 
   if (content.text.startsWith('臣光曰')) {
-    bg = '![bg left](assets/images/simaguang.jpg)\n\n'
+    bg = '![bg left](assets/images/simaguang.jpg)\n\n';
   } else if (content.text.startsWith('太史公曰')) {
-    bg = '![bg left](assets/images/simaqian.webp)\n\n'
+    bg = '![bg left](assets/images/simaqian.webp)\n\n';
   }
 
-  return `${bg}${audio}${text}`
+  return `${bg}${audio}${text}`;
 }
 
 async function process_file(inFile, outFile) {
   try {
-    let data = await read(inFile)
-    await fs.writeFile(outFile, data)
+    let data = await read(inFile);
+    await fs.writeFile(outFile, data);
   } catch (e) {
-    console.log(e)
+    console.log(e);
   }
 }
 
@@ -66,20 +68,18 @@ async function main() {
       describe: 'output path to put generated md files'
     })
     .demandOption(['input', 'output'], 'Please provide both input path and output path')
-    .help()
-    .argv
+    .help().argv;
 
-
-  const files = await fs.readdir(argv.i)
+  const files = await fs.readdir(argv.i);
 
   results = files
     .filter(name => name.endsWith('.json'))
     .map(name => {
-      const inFile = path.join(argv.i, name)
-      const outFile = path.join(argv.o, `${path.basename(name, '.json')}.md`)
-      return process_file(inFile, outFile)
-    })
-  return await Promise.all(results)
+      const inFile = path.join(argv.i, name);
+      const outFile = path.join(argv.o, `${path.basename(name, '.json')}.md`);
+      return process_file(inFile, outFile);
+    });
+  return await Promise.all(results);
 }
 
-main()
+main();
