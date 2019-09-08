@@ -76,7 +76,7 @@ gen-all-audios:
 		make gen-audios CHAPTER=0$$num ; \
 		((num = num + 1)) ; \
 	done;
-	num=100 ; while [[ $$num -le 294 ]] ; do \
+	num=100 ; while [[ $$num -le 130 ]] ; do \
 		make gen-audios CHAPTER=$$num ; \
 		((num = num + 1)) ; \
 	done
